@@ -4,14 +4,14 @@ seed(1)
 
 class RandomForest (object):
 	"""
-	A Random Forest base class. 
+	A Random Forest base class.
 
 	Classification and Regression Random Forests will be derived classes
-	that override certain functions of this class.  This was done 
-	because many common methods, so to reduce code they are written here 
+	that override certain functions of this class.  This was done
+	because many common methods, so to reduce code they are written here
 	in the base class.
-		
-	:Attributes: 
+
+	:Attributes:
 		**max_depth** (int): The maximum depth of tree.
 
 		**min_size** (int): The minimum number of datapoints in terminal nodes.
@@ -42,7 +42,7 @@ class RandomForest (object):
 
 		"""
 		self.max_depth = max_depth
-		self.min_size = min_size 
+		self.min_size = min_size
 		self.cost_function = cost
 		self.n_trees = n_trees
 		self.trees = list()
@@ -54,11 +54,11 @@ class RandomForest (object):
 		subsamples that are split into training and test set
 		to be used in k-fold cross-validation training.
 
-		Args: 
+		Args:
 			dataset (list) : The original dataset.
 
 		Returns:
-			list.  A list of the data set split into n_fold training and 
+			list.  A list of the data set split into n_fold training and
 			test sets.
 		"""
 
@@ -75,10 +75,10 @@ class RandomForest (object):
 
 	def _subsample(self, dataset):
 		"""
-		This function returns a bootstrapped version of the dataset which 
+		This function returns a bootstrapped version of the dataset which
 		has the same number of rows.
 
-		Args: 
+		Args:
 			dataset (list) : The dataset.
 
 		Returns:

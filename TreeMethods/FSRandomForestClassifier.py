@@ -1,8 +1,8 @@
 from math import sqrt
 from RandomForest import RandomForest
-from DecisionTreeClassifier import DecisionTreeClassifier
+from FSDecisionTreeClassifier import FSDecisionTreeClassifier
 
-class RandomForestClassifier (RandomForest):
+class FSRandomForestClassifier (RandomForest):
 
 	"""
 	A random forest classifier that derives from the base class RandomForest.
@@ -79,7 +79,7 @@ class RandomForestClassifier (RandomForest):
 
 		for i in range(self.n_trees):
 			sample = self._subsample(train)
-			tree = DecisionTreeClassifier(self.max_depth,
+			tree = FSDecisionTreeClassifier(self.max_depth,
 										   self.min_size,
 										   self.cost_function)
 

@@ -1,8 +1,7 @@
 import numpy as np
-from DecisionTree import DecisionTree
+from FSDecisionTree import FSDecisionTree
 
-
-class DecisionTreeRegressor (DecisionTree):
+class FSDecisionTreeRegressor (FSDecisionTree):
 	"""
 	A decision tree regression model that extends the DecisionTree class.
 

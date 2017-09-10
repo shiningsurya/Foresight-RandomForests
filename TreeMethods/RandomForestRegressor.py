@@ -7,10 +7,10 @@ import numpy as np
 class RandomForestRegressor (RandomForest):
 
 	"""
-	A random forest regression model that derives from the base class 
+	A random forest regression model that derives from the base class
 	RandomForest.
-		
-	:Attributes: 
+
+	:Attributes:
 		**n_trees** (int) : The number of trees to use.
 
 		**max_depth** (int): The maximum depth of tree.
@@ -27,7 +27,7 @@ class RandomForestRegressor (RandomForest):
 	def __init__(self, n_trees=10, max_depth=2, min_size=2, cost='mse'):
 		"""
 		Constructor for random forest regressor. This mainly just initialize
-		the attributes of the class by calling the base class constructor. 
+		the attributes of the class by calling the base class constructor.
 		However, here is where it is the cost function string is checked
 		to make sure it is using 'mse', otherwise an error is thrown.
 
@@ -40,13 +40,13 @@ class RandomForestRegressor (RandomForest):
 			max_depth (int): The maximum depth of tree.
 
 			min_size (int): The minimum number of datapoints in terminal nodes.
-	
+
 		"""
 		if cost != 'mse':
 			raise NameError('Not valid cost function')
 		else:
 			RandomForest.__init__(self, cost, n_trees=10, max_depth=2, min_size=2)
-		
+
 
 	def fit(self, train, target=None, test=None):
 		"""
@@ -59,14 +59,14 @@ class RandomForestRegressor (RandomForest):
 
 		:Parameters:
 			**train** (list or `Pandas DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_) : The training set.
-			
+
 			**target** (str or None) : The name of the target variable
-			
+
 			**test** (list or `Pandas DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_) : The test set.
-			
+
 		:Returns:
 			(list or None): If a test set is provided then the return value wil be
-			the predictions of the RandomForest on the test set.  If no test set 
+			the predictions of the RandomForest on the test set.  If no test set
 			is provide nothing is returned.
 		"""
 		# set the number of features for the trees to use.
@@ -74,9 +74,9 @@ class RandomForestRegressor (RandomForest):
 			if target is None:
 				raise ValueError('If passing dataframe need to specify target.')
 			else:
-		
+
 				train = self._convert_dataframe_to_list(train, target)
-	
+
 		n_features = int(sqrt(len(train[0])-1))
 
 		for i in range(self.n_trees):
@@ -96,7 +96,7 @@ class RandomForestRegressor (RandomForest):
 
 	def predict(self, row):
 		"""
-		Peform a prediction for a sample data point by bagging 
+		Peform a prediction for a sample data point by bagging
 		the prediction of the trees in the ensemble and averaging
 		the predictions.
 
@@ -115,14 +115,14 @@ class RandomForestRegressor (RandomForest):
 
 	def KFoldCV(self, dataset, target, n_folds=10):
 		"""
-		Perform k-fold cross validatation on the dataset 
+		Perform k-fold cross validatation on the dataset
 		and return the acrruracy of each training.
 
 		:Parameters:
 			**dataset** (list or `Pandas DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_) : The dataset in list form.
-			
+
 			** target ** (str) : The target variable name.
-			
+
 			**n_fold** (int) : The number of folds in the k-fold CV.
 
 		:Returns: (list) : List of the accuracy of each Random Forest on each
@@ -133,7 +133,7 @@ class RandomForestRegressor (RandomForest):
 				raise ValueError('If passing dataframe need to specify target.')
 			else:
 				dataset = self._convert_dataframe_to_list(dataset, target)
-		
+
 		folds = self._cross_validation_split(dataset, n_folds)
 		scores = list()
 		for fold in folds:
@@ -154,10 +154,10 @@ class RandomForestRegressor (RandomForest):
 
 	def _metric(self, actual, predicted):
 		"""
-		Returns the rmse of the predictions for now, extending it 
+		Returns the rmse of the predictions for now, extending it
 		to include other metrics.
 
-		Args: 
+		Args:
 			actual (list) : The actual target values.
 			predicted (list) : The predicted target values.
 
@@ -171,7 +171,7 @@ class RandomForestRegressor (RandomForest):
 		"""
 		Computes the accuracy by counting how many predictions were correct.
 
-		Args: 
+		Args:
 			actual (list) : The actual target values.
 			predicted (list) : The predicted target values.
 
@@ -181,4 +181,3 @@ class RandomForestRegressor (RandomForest):
 		diff = np.array(actual) - np.array(predicted)
 		diff_sq = diff * diff
 		return sqrt(diff_sq.mean())
-

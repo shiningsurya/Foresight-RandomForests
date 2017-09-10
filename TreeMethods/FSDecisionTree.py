@@ -1,8 +1,13 @@
 from random import randrange
+import numpy as np
 
-class DecisionTree (object):
+from .Foresight import Foresight
+
+class FSDecisionTree (object):
 	"""
 	A decision tree base class.
+
+	Uses Foresight instead of randomly selecting features.
 
 	Classification and Regression Trees will be derived class that override
 	certain functions of this class.  This was done because many common
@@ -88,14 +93,20 @@ class DecisionTree (object):
 		b_index, b_value, b_score, b_groups = 999, 999, 999, None
 
 		# the features to test among the split
-		features = list()
+		# features = list()
 
+		dat = np.array(dataset)
+
+		fs = Foresight(dat[:,:-1],dat[:,-1])
 		# randomily select features to consider
-		while len(features) < self.n_features:
-			index = randrange(len(dataset[0])-1)
-			if index not in features:
-				features.append(index)
-
+		# while len(features) < self.n_features:
+		# 	index = randrange(len(dataset[0])-1)
+		# 	if index not in features:
+		# 		features.append(index)
+		features = fs.select_n_features(self.n_features)
+		if len(features) < self.n_features :
+			print "[!!] Selecting selecting less than what is asked for"
+			# print "[!!] Reseting `self.n_features`"
 		# loop through the number of features and values of the data
 		# to figure out which gives the best split according
 		# to the derived classes cost function value of the tested

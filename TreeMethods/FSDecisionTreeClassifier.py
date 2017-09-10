@@ -1,10 +1,10 @@
-import numpy as np
-from DecisionTree import DecisionTree
 
+from FSDecisionTree import FSDecisionTree
+import math
 
-class DecisionTreeRegressor (DecisionTree):
+class FSDecisionTreeClassifier (FSDecisionTree):
 	"""
-	A decision tree regression model that extends the DecisionTree class.
+	A decision tree classifier that extends the DecisionTree class.
 
 	:Attributes:
 		**max_depth** (int): The maximum depth of tree.
@@ -17,47 +17,52 @@ class DecisionTreeRegressor (DecisionTree):
 
 		**columns** (list) : The feature names.
 
-		**cost_function** (str) : The name of the cost function to use: 'mse'
+		**class_values** (list) : The list of the target class values.
+
+		**cost_function** (str) : The name of the cost function to use: 'gini'.
 	"""
 
-	def __init__(self, max_depth=2, min_size=2, cost='mse'):
+	def __init__(self, max_depth=2, min_size=2, cost='gini'):
 		"""
-		Constructor for the Decision Tree Regressor.  It calls the base
+		Constructor for the Decision Tree Classifer.  It calls the base
 		class constructor and sets the cost function.  If the cost
-		parameter is not 'mse' an error is thrown.
+		parameter is not 'gini' then an exception is thrown.
 
 		Parameters:
 			**max_depth** (int): The maximum depth of tree.
 
 			**min_size** (int): The minimum number of datapoints in terminal nodes.
 
-			**cost** (str) : The name of the cost function to use: 'gini' or 'entropy'
+			**cost** (str) : The name of the cost function to use: 'gini'.
 		"""
-		DecisionTree.__init__(self, max_depth, min_size)
+		FSDecisionTree.__init__(self, max_depth, min_size)
+		self.class_values = None
 		self.cost_function = None
-		if cost == 'mse':
+		if cost == 'gini':
 			self.cost_function = cost
 		else:
 			raise NameError('Not valid cost function')
 
 
+
 	def fit(self, train, target=None, n_features=None):
 		"""
-		Builds the regression decsision tree by recursively splitting
+		Builds the classification decsision tree by recursively splitting
 		tree until the the maxmimum depth, max_depth of the tree is acheived or
 		the node have the minimum number of training points, min_size.
 
 		n_features will be passed by the RandomForest as it is usually a subset
-		of the total number of features. However, if one is using the class as
-		a stand alone decision tree, then the n_features will automatically be
+		of the total number of features. However, if one is using the class as a
+		stand alone decision tree, then the n_features will automatically be
 
 		:Parameters:
 			**dataset** (list or `Pandas DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_) : The dataset.
 
 			**target** (str) : The name of the target variable.
 
-			**n_features** (int) : The number of features.
+			**n_features*** (int) : The number of features.
 		"""
+		self.class_values = list(set(row[-1] for row in train))
 		self._fit(train, target, n_features)
 
 	def predict(self, row):
@@ -73,6 +78,7 @@ class DecisionTreeRegressor (DecisionTree):
 		else:
 			return self._predict(row, self.root)
 
+
 	def _cost(self, groups):
 		"""
 		Returns the associated cost for the split of the dataset
@@ -83,39 +89,42 @@ class DecisionTreeRegressor (DecisionTree):
 			groups (list) : List of the two subdatasets after splitting.
 
 		Returns:
-			float. Mean square error of the split.
+			float. Either the gini-index or entropy of the split.
 
 		"""
-		return self._mse(groups)
+		return self._gini_index(groups)
 
-	def _mse(self, groups):
+	def _gini_index(self, groups):
 		"""
-		Returns the mse for the split of the dataset into two groups.
+		Returns the gini-index for the split of the dataset into two groups.
 
 		Args:
 			groups (list) : List of the two subdatasets after splitting.
 
 		Returns:
-			float. mse of the split.
+			float. gini-index of the split.
 		"""
-		mse = 0.0
-		for group in groups:
-			if len(group) == 0:
+		gini = 0.0
+		for class_value in self.class_values:
+			for group in groups:
+				size = len(group)
+				if size == 0:
 					continue
-			outcomes = [row[-1] for row in group]
-			mse += np.std(outcomes)
-		return mse
+				p = [row[-1] for row in group].count(class_value) / float(size)
+				gini += (p * (1.0 - p))
+		return gini
+
 
 	def _make_leaf(self, group):
 		"""
-        Creates a terminal node value by taking the average target value
-		in the group.
+        Creates a terminal node value by selecting amoung the group that has
+        the majority.
 
         Args:
         	group (list): The subgroup of the dataset.
 
        	Returns:
-       		int. The mean  of this groups target class values.
+       		int. The majority of this groups target class values.
     	"""
 		outcomes = [row[-1] for row in group]
-		return np.mean(outcomes)
+		return max(set(outcomes), key=outcomes.count)

@@ -1,11 +1,13 @@
 from math import sqrt
 from RandomForest import RandomForest
-from DecisionTreeClassifier import DecisionTreeClassifier
+from DecisionTreeRegressor import FSDecisionTreeRegressor
+import numpy as np
 
-class RandomForestClassifier (RandomForest):
+class FSRandomForestRegressor (RandomForest):
 
 	"""
-	A random forest classifier that derives from the base class RandomForest.
+	A random forest regression model that derives from the base class
+	RandomForest.
 
 	:Attributes:
 		**n_trees** (int) : The number of trees to use.
@@ -21,12 +23,12 @@ class RandomForestClassifier (RandomForest):
 		**columns** (list) : The feature names.
 	"""
 
-	def __init__(self, n_trees=10, max_depth=2, min_size=2, cost='gini'):
+	def __init__(self, n_trees=10, max_depth=2, min_size=2, cost='mse'):
 		"""
-		Constructor for random forest classifier. This mainly just initialize
+		Constructor for random forest regressor. This mainly just initialize
 		the attributes of the class by calling the base class constructor.
 		However, here is where it is the cost function string is checked
-		to make sure it either using 'gini', otherwise an error is thrown.
+		to make sure it is using 'mse', otherwise an error is thrown.
 
 		Args:
 			cost (str) : The name of the cost function to use for evaluating
@@ -39,10 +41,10 @@ class RandomForestClassifier (RandomForest):
 			min_size (int): The minimum number of datapoints in terminal nodes.
 
 		"""
-		if cost != 'gini':
+		if cost != 'mse':
 			raise NameError('Not valid cost function')
 		else:
-			RandomForest.__init__(self, cost,  n_trees=10, max_depth=2, min_size=2)
+			RandomForest.__init__(self, cost, n_trees=10, max_depth=2, min_size=2)
 
 
 	def fit(self, train, target=None, test=None):
@@ -50,7 +52,6 @@ class RandomForestClassifier (RandomForest):
 		Fit the random forest to the training set train.  If a test set is provided
 		then the return value wil be the predictions of the RandomForest on the
 		test set.  If no test set is provide nothing is returned.
-
 
 		Note: Below we set the number of features to use in the splitting to be
 		the square root of the number of total features in the dataset.
@@ -79,9 +80,9 @@ class RandomForestClassifier (RandomForest):
 
 		for i in range(self.n_trees):
 			sample = self._subsample(train)
-			tree = DecisionTreeClassifier(self.max_depth,
-										   self.min_size,
-										   self.cost_function)
+			tree = FSDecisionTreeRegressor(self.max_depth,
+										 self.min_size,
+										 self.cost_function)
 
 			tree.fit(sample, n_features)
 			self.trees.append(tree)
@@ -95,12 +96,12 @@ class RandomForestClassifier (RandomForest):
 	def predict(self, row):
 		"""
 		Peform a prediction for a sample data point by bagging
-		the prediction of the trees in the ensemble. The majority
-		target class that is chosen.
+		the prediction of the trees in the ensemble and averaging
+		the predictions.
 
 		:Parameter: **row** (list or `Pandas Series <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html>`_ ) : The data point to classify.
 
-		:Returns: (int) : The predicted target class for this data point.
+		:Returns: (int) : The predicted target value for this data point.
 		"""
 		if isinstance(row, list) is False:
 			row = row.tolist()
@@ -108,7 +109,7 @@ class RandomForestClassifier (RandomForest):
 		else:
 			predictions = [tree.predict(row) for tree in self.trees]
 
-		return max(set(predictions), key=predictions.count)
+		return np.mean(predictions)
 
 
 	def KFoldCV(self, dataset, target, n_folds=10):
@@ -152,7 +153,7 @@ class RandomForestClassifier (RandomForest):
 
 	def _metric(self, actual, predicted):
 		"""
-		Returns the accuracy of the predictions for now, extending it
+		Returns the rmse of the predictions for now, extending it
 		to include other metrics.
 
 		Args:
@@ -160,12 +161,12 @@ class RandomForestClassifier (RandomForest):
 			predicted (list) : The predicted target values.
 
 		Returns:
-			float.  The accuracy of the predictions.
+			float.  The rmse of the predictions.
 
 		"""
-		return self._accuracy(actual, predicted)
+		return self._rmse(actual, predicted)
 
-	def _accuracy(self, actual, predicted):
+	def _rmse(self, actual, predicted):
 		"""
 		Computes the accuracy by counting how many predictions were correct.
 
@@ -174,10 +175,8 @@ class RandomForestClassifier (RandomForest):
 			predicted (list) : The predicted target values.
 
 		Returns:
-			float.  The accuracy of the predictions.
+			float.  The rmse the predictions.
 		"""
-		correct = 0
-		for i in range(len(actual)):
-			if actual[i] == predicted[i]:
-				correct += 1
-		return correct / float(len(actual)) * 100.0
+		diff = np.array(actual) - np.array(predicted)
+		diff_sq = diff * diff
+		return sqrt(diff_sq.mean())

@@ -1,0 +1,3 @@
+{
+  "tests/test_classification_tree.py::test_get_split": true
+}

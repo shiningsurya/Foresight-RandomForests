@@ -4,9 +4,9 @@ import math
 
 class DecisionTreeClassifier (DecisionTree):
 	"""
-	A decision tree classifier that extends the DecisionTree class. 
+	A decision tree classifier that extends the DecisionTree class.
 
-	:Attributes: 
+	:Attributes:
 		**max_depth** (int): The maximum depth of tree.
 
 		**min_size** (int): The minimum number of datapoints in terminal nodes.
@@ -28,7 +28,7 @@ class DecisionTreeClassifier (DecisionTree):
 		class constructor and sets the cost function.  If the cost
 		parameter is not 'gini' then an exception is thrown.
 
-		Parameters: 
+		Parameters:
 			**max_depth** (int): The maximum depth of tree.
 
 			**min_size** (int): The minimum number of datapoints in terminal nodes.
@@ -43,21 +43,21 @@ class DecisionTreeClassifier (DecisionTree):
 		else:
 			raise NameError('Not valid cost function')
 
-		
+
 
 	def fit(self, train, target=None, n_features=None):
 		"""
-		Builds the classification decsision tree by recursively splitting 
+		Builds the classification decsision tree by recursively splitting
 		tree until the the maxmimum depth, max_depth of the tree is acheived or
 		the node have the minimum number of training points, min_size.
-		
-		n_features will be passed by the RandomForest as it is usually a subset 
-		of the total number of features. However, if one is using the class as a 
-		stand alone decision tree, then the n_features will automatically be 
-		
+
+		n_features will be passed by the RandomForest as it is usually a subset
+		of the total number of features. However, if one is using the class as a
+		stand alone decision tree, then the n_features will automatically be
+
 		:Parameters:
 			**dataset** (list or `Pandas DataFrame <http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_) : The dataset.
-	
+
 			**target** (str) : The name of the target variable.
 
 			**n_features*** (int) : The number of features.
@@ -81,11 +81,11 @@ class DecisionTreeClassifier (DecisionTree):
 
 	def _cost(self, groups):
 		"""
-		Returns the associated cost for the split of the dataset 
+		Returns the associated cost for the split of the dataset
 		into two groups. The cost_function will be set when the
 		tree is initialized.
 
-		Args: 
+		Args:
 			groups (list) : List of the two subdatasets after splitting.
 
 		Returns:
@@ -120,7 +120,7 @@ class DecisionTreeClassifier (DecisionTree):
         Creates a terminal node value by selecting amoung the group that has
         the majority.
 
-        Args: 
+        Args:
         	group (list): The subgroup of the dataset.
 
        	Returns:

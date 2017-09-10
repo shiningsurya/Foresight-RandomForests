@@ -3,14 +3,16 @@ import pandas as pd
 
 #from TreeMethods.DecisionTree import TreeNode
 from TreeMethods.DecisionTreeClassifier import DecisionTreeClassifier
+from TreeMethods.FSDecisionTreeClassifier import FSDecisionTreeClassifier
 
 def test_initialization():
-	
+
 	tree = DecisionTreeClassifier(max_depth=5, min_size=1)
-
+	fstree = FSDecisionTreeClassifier(max_depth=5,min_size=1)
 	assert tree.max_depth == 5
-	assert tree.min_size ==1 
-
+	assert tree.min_size ==1
+	assert fstree.max_depth == 5
+	assert fstree.min_size ==1
 ###############################################################################
 
 test_gini_index_data = [
@@ -20,10 +22,13 @@ test_gini_index_data = [
 
 @pytest.mark.parametrize('df, expected', test_gini_index_data)
 def test_gini_index(df, expected):
-	
+
 	tree = DecisionTreeClassifier(max_depth=5, min_size=1)
+	fstree = FSDecisionTreeClassifier(max_depth=5,min_size=1)
 	tree.class_values = [0,1]
+	fstree.class_values = [0,1]
 	assert tree._gini_index(df) == expected
+	assert fstree._gini_index(df) == expected
 
 ###############################################################################
 
@@ -35,16 +40,18 @@ test_make_leaf_data = [
 def test_make_leaf(df, expected):
 
 	tree = DecisionTreeClassifier(max_depth=5, min_size=1)
+	fstree = FSDecisionTreeClassifier(max_depth=5,min_size=1)
 	tree.class_values = [0,1]
-
+	fstree.class_values = [0,1]
 	assert tree._make_leaf(df) == expected
+	assert fstree._make_leaf(df) == expected
 
 ###############################################################################
 
 
 def test_get_split():
 	tree = DecisionTreeClassifier(max_depth=5, min_size=2)
-
+	fstree = FSDecisionTreeClassifier(max_depth=5, min_size=2)
 	df = [[1, 2, 3, 0],
 		[1.2, 2, 3, 0],
 		[1.3, 2, 3, 0],
@@ -55,11 +62,16 @@ def test_get_split():
 	tree.n_features = 3
 	tree.columns = ['col1','col2','col3']
 	tree.class_values = [0,1]
+	fstree.n_features = 3
+	fstree.columns = ['col1','col2','col3']
+	fstree.class_values = [0,1]
 
 	result = tree._get_split(df)
-
+	fsresult = fstree._get_split(df)
 	assert result['index'] == 0
 	assert result['value'] == 2.0
+	assert fsresult['index'] == 0
+	assert fsresult['value'] == 2.0
 
 ###############################################################################
 test_predict_data = [
@@ -77,14 +89,12 @@ test_predict_data = [
 #		[2.1, 1],
 #		[2.5, 1]]
 
-	
+
 #	df = pd.DataFrame(data=dataset,columns =['col1','tar'])
 	#df.sort_values('col1',inplace=True)
 #	df = df.reset_index(drop=True)
 
-#	tree = DecisionTreeClassifier(5,2) 
+#	tree = DecisionTreeClassifier(5,2)
 #	tree.fit(df,target='tar')
-	
+
 #	assert tree.predict(row) == expected
-
-
