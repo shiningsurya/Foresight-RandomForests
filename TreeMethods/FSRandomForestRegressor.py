@@ -1,6 +1,6 @@
 from math import sqrt
 from RandomForest import RandomForest
-from DecisionTreeRegressor import FSDecisionTreeRegressor
+from FSDecisionTreeRegressor import FSDecisionTreeRegressor
 import numpy as np
 
 class FSRandomForestRegressor (RandomForest):
