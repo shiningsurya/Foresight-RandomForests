@@ -120,9 +120,13 @@ class Foresight(object):
         sample_size = nn*n
         if sample_size > self.d:
             sample_size = self.d
-
+        if self.verbose:
+            print 'Diag-1 ',sample_size
+            print 'wgts-1 ',wgts 
         if sample_size > np.sum(wgts > 0):
             sample_size = np.sum(wgts > 0)
+        if self.verbose:
+            print 'Diag0 ',sample_size
 
         if self.verbose:
             print 'Diag1: ', wgts.shape

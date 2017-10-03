@@ -181,3 +181,36 @@ class RandomForestRegressor (RandomForest):
 		diff = np.array(actual) - np.array(predicted)
 		diff_sq = diff * diff
 		return sqrt(diff_sq.mean())
+
+	def getparams():
+		"""
+		Returns the parameters in a dictionary
+
+		Args:
+
+		Returns:
+			dict. Keys are the parameters.
+		"""
+		ret = dict()
+		#  n_trees=10, max_depth=2, min_size=2, cost='gini'
+		ret['n_trees'] = self.n_trees
+		ret['max_depth'] = self.max_depth
+		ret['min_size'] = self.min_size
+
+		return ret
+
+	def setparams(ret):
+		"""
+		Takes in a dictionary and sets the Parameters
+
+		Args:
+			dict. Keys are the parameters.
+
+		Returns:
+
+		"""
+		if not isinstance(ret,dict()):
+			raise ValueError('Expecting a dictionary here')
+		self.n_trees = ret['n_trees']
+		self.max_depth = ret['max_depth']
+		self.min_size = ret['min_size']

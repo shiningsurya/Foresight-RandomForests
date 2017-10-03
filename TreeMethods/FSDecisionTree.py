@@ -97,7 +97,7 @@ class FSDecisionTree (object):
 
 		dat = np.array(dataset)
 
-		fs = Foresight(dat[:,:-1],dat[:,-1])
+		fs = Foresight(dat[:,:-1],dat[:,-1],verbose=True)
 		# randomily select features to consider
 		# while len(features) < self.n_features:
 		# 	index = randrange(len(dataset[0])-1)

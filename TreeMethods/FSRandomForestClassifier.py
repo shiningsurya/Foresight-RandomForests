@@ -21,7 +21,7 @@ class FSRandomForestClassifier (RandomForest):
 		**columns** (list) : The feature names.
 	"""
 
-	def __init__(self, n_trees=10, max_depth=2, min_size=2, cost='gini'):
+	def __init__(self, n_feat, n_trees=10, max_depth=2, min_size=2, cost='gini'):
 		"""
 		Constructor for random forest classifier. This mainly just initialize
 		the attributes of the class by calling the base class constructor.
@@ -42,6 +42,7 @@ class FSRandomForestClassifier (RandomForest):
 		if cost != 'gini':
 			raise NameError('Not valid cost function')
 		else:
+			self.n_features = n_feat
 			RandomForest.__init__(self, cost,  n_trees=10, max_depth=2, min_size=2)
 
 
@@ -74,16 +75,13 @@ class FSRandomForestClassifier (RandomForest):
 			else:
 
 				train = self._convert_dataframe_to_list(train, target)
-
-		n_features = int(sqrt(len(train[0])-1))
-
 		for i in range(self.n_trees):
 			sample = self._subsample(train)
 			tree = FSDecisionTreeClassifier(self.max_depth,
 										   self.min_size,
 										   self.cost_function)
 
-			tree.fit(sample, n_features)
+			tree.fit(sample, self.n_features)
 			self.trees.append(tree)
 
 		# if the test set is not empty then return the predictions
@@ -181,3 +179,37 @@ class FSRandomForestClassifier (RandomForest):
 			if actual[i] == predicted[i]:
 				correct += 1
 		return correct / float(len(actual)) * 100.0
+
+	def getparams():
+		"""
+		Returns the parameters in a dictionary
+
+		Args:
+
+		Returns:
+			dict. Keys are the parameters.
+		"""
+		ret = dict()
+		#  n_trees=10, max_depth=2, min_size=2, cost='gini'
+		ret['n_trees'] = self.n_trees
+		ret['max_depth'] = self.max_depth
+		ret['min_size'] = self.min_size
+		ret['n_features'] = self.n_features
+		return ret
+
+	def setparams(ret):
+		"""
+		Takes in a dictionary and sets the Parameters
+
+		Args:
+			dict. Keys are the parameters.
+
+		Returns:
+
+		"""
+		if not isinstance(ret,dict()):
+			raise ValueError('Expecting a dictionary here')
+		self.n_trees = ret['n_trees']
+		self.max_depth = ret['max_depth']
+		self.min_size = ret['min_size']
+		self.n_features = ret['n_features']
