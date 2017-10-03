@@ -182,7 +182,7 @@ class RandomForestRegressor (RandomForest):
 		diff_sq = diff * diff
 		return sqrt(diff_sq.mean())
 
-	def getparams():
+	def getparams(self):
 		"""
 		Returns the parameters in a dictionary
 
@@ -199,7 +199,7 @@ class RandomForestRegressor (RandomForest):
 
 		return ret
 
-	def setparams(ret):
+	def setparams(self,ret):
 		"""
 		Takes in a dictionary and sets the Parameters
 

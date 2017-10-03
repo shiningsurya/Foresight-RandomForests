@@ -96,8 +96,13 @@ class FSDecisionTree (object):
 		# features = list()
 
 		dat = np.array(dataset)
-
-		fs = Foresight(dat[:,:-1],dat[:,-1],verbose=True)
+		##
+		# So my idea rn is to implicitly call FS fit here.
+		# This is by design since FS expects `mi_features_y` is already populated
+		# when `select_n_features` is called.
+		##
+		fs = Foresight(dat[:,:-1],dat[:,-1],verbose=False)
+		fs.fit()
 		# randomily select features to consider
 		# while len(features) < self.n_features:
 		# 	index = randrange(len(dataset[0])-1)

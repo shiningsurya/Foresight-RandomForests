@@ -179,7 +179,7 @@ class FSRandomForestRegressor (RandomForest):
 		diff = np.array(actual) - np.array(predicted)
 		diff_sq = diff * diff
 		return sqrt(diff_sq.mean())
-	def getparams():
+	def getparams(self):
 		"""
 		Returns the parameters in a dictionary
 
@@ -196,7 +196,7 @@ class FSRandomForestRegressor (RandomForest):
 		ret['n_features'] = self.n_features
 		return ret
 
-	def setparams(ret):
+	def setparams(self,ret):
 		"""
 		Takes in a dictionary and sets the Parameters
 

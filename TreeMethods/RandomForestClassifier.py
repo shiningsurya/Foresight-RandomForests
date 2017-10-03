@@ -182,7 +182,7 @@ class RandomForestClassifier (RandomForest):
 				correct += 1
 		return correct / float(len(actual)) * 100.0
 
-	def getparams():
+	def getparams(self):
 		"""
 		Returns the parameters in a dictionary
 
@@ -199,7 +199,7 @@ class RandomForestClassifier (RandomForest):
 
 		return ret
 
-	def setparams(ret):
+	def setparams(self,ret):
 		"""
 		Takes in a dictionary and sets the Parameters
 

@@ -26,6 +26,7 @@ class Foresight(object):
         self.n, self.d = X.shape
         self.X = X.copy() # deep copy
         self.y = y.copy() # deep copy
+        self.iterator = 0 # I need to keep track of function calls
         '''
         doubt: Should I remove one of `aux_data` or `X` since at any point we're
         using only one of them?
@@ -112,17 +113,31 @@ class Foresight(object):
         '''
         TODO: What if some features in `X` are also discrete?
         '''
+        # print "Function call #", self.iterator
+        self.iterator += 1
         #ensure there are no negative MIs
         # ABOVE code comes from `fit`
         # BELOW code comes from `select_n_features`
-        wgts = self.mi_features_y / np.sum(self.mi_features_y)
+        if not self.fitdone:
+            self.fit()
+        if np.all(self.mi_features_y == 0):
+            wgts = np.ones(self.d)/self.d
+            # We will have to further investigate why we're getting
+            # mi_features_y to be all zero despite repeated calls to fit function
+            # for now, this hotfix
+        else:
+            wgts = self.mi_features_y / np.nansum(self.mi_features_y)
+        # need nansum, as nan is highly contagious
+        # all you need is one nan and one innocouous operation to turn
+        # an entire array into nans
         # simple logic to prevent ValueError while drawing samples
         sample_size = nn*n
         if sample_size > self.d:
             sample_size = self.d
         if self.verbose:
+            print "Diag-2", self.mi_features_y
             print 'Diag-1 ',sample_size
-            print 'wgts-1 ',wgts 
+            print 'wgts-1 ',wgts
         if sample_size > np.sum(wgts > 0):
             sample_size = np.sum(wgts > 0)
         if self.verbose:
@@ -134,8 +149,20 @@ class Foresight(object):
             print 'Diag3: ', sample_size
             print 'Diag4: ', wgts
 
-        get_a_heap_of_features = np.random.choice(self.d, size=sample_size, replace=False, p=wgts)
-        get_1_feature = np.random.choice(self.d, size=1, replace=False, p=wgts)[0]
+        # catch exception?
+        # rn the exception handling is not exceptional.
+        # if we're going to get an error, we perform uniform sampling.
+        wnnz = np.count_nonzero(wgts)
+        if self.verbose:
+            print "WNNZ,SS,D,WGTS", wnnz, sample_size, self.d,wgts
+        if wnnz >= sample_size:
+            get_a_heap_of_features = np.random.choice(self.d, size=sample_size, replace=False, p=wgts)
+        else:
+            get_a_heap_of_features = np.random.choice(self.d, size=sample_size, replace=False)
+        if wnnz >= 1:
+            get_1_feature = np.random.choice(self.d, size=1, replace=False, p=wgts)[0]
+        else:
+            get_1_feature = np.random.choice(self.d,size=1,replace=False)[0]
 
         """
         We have a heap of features sampled using weights provided by MI.
