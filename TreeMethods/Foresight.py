@@ -6,18 +6,15 @@ Authors: Suryarao Bethapudi: ep14btech11008@iith.ac.in
 Ben Hoyle benhoyle1212@gmail.com
 
 
-
-
 '''
 import numpy as np
 
 #use SKlearn, which accepts discreet and continuous variables now (as of 0.19.0)
 from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
 
-__all__=['fit', 'select_n_features','lazy_select']
+__all__=['fit', 'select_n_features', 'lazy_select']
 
 EPS = np.finfo(float).eps
-
 
 class Foresight(object):
     """Good class"""
@@ -57,18 +54,12 @@ class Foresight(object):
 
         self.aux_data = aux_data
         if aux_data is not None:
-            assert(aux_data.shape == X.shape)
-            '''
-            doubt:
-            shouldn't we just check if the dimensions of `X` and `aux_data` match?
-            number of rows of both the matrices can be different right?
-            -- okay I'm fine with this. Yes the # of rows will almost certainly be different.
-            '''
+
             self.aux_data = aux_data.copy()
             self.aux_n, self.aux_d = self.aux_data.shape
-            self.ind_aux = np.arange(len(self.aux_data[:, 0]))
-            if len(ind_aux) > self.number_rows:
-                self.ind_aux = np.random.choice(len(ind_aux), size=self.number_rows, replace=False)
+            self.ind_aux = np.arange(len(aux_data))
+            if self.aux_n > self.number_rows:
+                self.ind_aux = np.random.choice(len(aux_data), size=self.number_rows, replace=False)
 
         if ydiscrete is None:
             self.ydiscrete = self.is_array_discreet(y)
@@ -107,11 +98,11 @@ class Foresight(object):
         """
         Calling the optimized function `select_n_features`
 
-        -- BH: Note, we can be clever, and there is no need to perform a normal NF*NF fit at all.
         """
 
         '''
         TODO: What if some features in `X` are also discrete?
+        -- Yes, this is an issue. I would say let's just treat them as 
         '''
         # print "Function call #", self.iterator
         self.iterator += 1
