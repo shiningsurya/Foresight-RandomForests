@@ -1,6 +1,6 @@
 # Forecast enabled Random Forests In Python
 
-## Intoduction
+## Introduction
 		Our idea is simple at it's core. Use Mutual Information to assist feature selection in random forests *judiciously* in 
 		order to retain the robustness inherent to Random Forests and boost it's performance.
 ## Dependencies
